@@ -16,18 +16,39 @@ def cats_index(request):
   cats = Cat.objects.all()
   return render(request, 'cats/index.html', { 'cats': cats })
 
+# def cats_detail(request, cat_id):
+#   cat = Cat.objects.get(id=cat_id)
+#   # instantiate FeedingForm to be rendered in the detail.html template
+#   feeding_form = FeedingForm()
+#   return render(request, 'cats/detail.html', {
+#     'cat': cat,
+#     'feeding_form': feeding_form
+#   })
+
 def cats_detail(request, cat_id):
   cat = Cat.objects.get(id=cat_id)
-  # instantiate FeedingForm to be rendered in the detail.html template
+  # Get the toys the cat doesn't have...
+  # First, create a list of the toy ids that the cat DOES have
+  id_list = cat.toys.all().values_list('id')
+  # Now we can query for toys whose ids are not in the list using exclude
+  toys_cat_doesnt_have = Toy.objects.exclude(id__in=id_list)
   feeding_form = FeedingForm()
   return render(request, 'cats/detail.html', {
-    'cat': cat,
-    'feeding_form': feeding_form
+    'cat': cat, 'feeding_form': feeding_form,
+    # Add the toys to be displayed
+    'toys': toys_cat_doesnt_have
   })
+
+def assoc_toy(request, cat_id, toy_id):
+  # Note that you can pass a toy's id instead of the whole toy object
+  Cat.objects.get(id=cat_id).toys.add(toy_id)
+  return redirect('detail', cat_id=cat_id)
+
 
 class CatCreate(CreateView):
   model = Cat
-  fields = '__all__'
+  # fields = '__all__'
+  fields = ['name' , 'breed' , 'description' , 'age']
 
 class CatUpdate(UpdateView):
   model = Cat
