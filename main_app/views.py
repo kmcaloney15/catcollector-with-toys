@@ -4,7 +4,8 @@ from django.views.generic import ListView, DetailView
 from .models import Cat, Toy
 from .forms import FeedingForm
 
-# View functions
+
+#  ------- FUNCTIONS ------------------------------------------------------------
 
 def home(request):
   return render(request, 'home.html')
@@ -44,6 +45,8 @@ def assoc_toy(request, cat_id, toy_id):
   Cat.objects.get(id=cat_id).toys.add(toy_id)
   return redirect('detail', cat_id=cat_id)
 
+
+#  ------- CLASSES ------------------------------------------------------------
 
 class CatCreate(CreateView):
   model = Cat
